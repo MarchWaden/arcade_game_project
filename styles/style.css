@@ -1,0 +1,27 @@
+.gridsquare {
+  background-color: tan;
+  height: 16px;
+  width: 16px;
+
+}
+.board_column{
+  display: inline-block;
+}
+.scoreboard{
+  display: inline-block;
+}
+#gameboard {
+  display: inline-block;
+}
+.gridsquare .bullet {
+  background-color: silver;
+}
+.player1{
+  background-color: blue;
+}
+.player2{
+  background-color: red;
+}
+.wall{
+  background-color: brown;
+}
