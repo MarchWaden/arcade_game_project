@@ -30,7 +30,6 @@ class Player {
   }
   willCollide(direction){
     if (direction == 'n'){
-      console.log('looking north');
       if ($(`#square_${this.x}_${this.y+1}`).hasClass('player1')
       ||$(`#square_${this.x}_${this.y+1}`).hasClass('player2')
       ||$(`#square_${this.x}_${this.y+1}`).hasClass('bullet')
@@ -66,7 +65,6 @@ class Player {
   move(direction){
     if (direction == 'n' && !this.willCollide('n')){
       $(`#square_${this.x}_${this.y}`).removeClass(`player${this.number}`);
-      console.log("wtf")
       this.y++;
       this.facing = 'n';
     }
@@ -87,7 +85,7 @@ class Player {
     }
   }
   fire(){
-    let bullet = new Bullet(this.x,this.y,this.facing);
+    let bullet = new Bullet(this.x,this.y,this.facing,this);
     if (this.facing == 'n'){
       bullet.y++;
     }else if (this.facing == 'e'){
@@ -101,14 +99,14 @@ class Player {
   }
 }
 class Bullet {
-  constructor (x,y,facing){
+  constructor (x,y,facing,player){
+    this.player = player;
     this.x = x;
     this.y = y;
     this.facing = facing;
   }
   willCollide(direction){
     if (direction == 'n'){
-      console.log('looking north');
       if ($(`#square_${this.x}_${this.y+1}`).hasClass('player1')
       ||$(`#square_${this.x}_${this.y+1}`).hasClass('player2')
       ||$(`#square_${this.x}_${this.y+1}`).hasClass('bullet')
@@ -137,8 +135,63 @@ class Bullet {
       return true;
     }
     }else {
-      console.log('unobstructed')
       return false;
+    }
+  }
+  willHitPlayer(direction){
+    if (direction == 'n'){
+      if ($(`#square_${this.x}_${this.y+1}`).hasClass('player1')
+      ||$(`#square_${this.x}_${this.y+1}`).hasClass('player2')){
+        return true;
+      }
+    }else if (direction == 'e'){
+      if ($(`#square_${this.x+1}_${this.y}`).hasClass('player1')
+      ||$(`#square_${this.x+1}_${this.y}`).hasClass('player2')){
+      return true;
+    }
+    }else if (direction == 'w'){
+      if ($(`#square_${this.x-1}_${this.y}`).hasClass('player1')
+      ||$(`#square_${this.x-1}_${this.y}`).hasClass('player2')){
+      return true;
+    }
+    }else if (direction == 's'){
+      if ($(`#square_${this.x}_${this.y-1}`).hasClass('player1')
+      ||$(`#square_${this.x}_${this.y-1}`).hasClass('player2')){
+      return true;
+    }
+    }else {
+      return false;
+    }
+  }
+  move(direction){
+    if (this.willHitPlayer(direction)){
+      this.player.score++;
+      console.log(this.player.score);
+    }
+    if (this.willCollide(direction)){
+      $(`#square_${this.x}_${this.y}`).removeClass(`bullet`);
+      this.x = null;
+      this.y = null;
+    }
+    if (direction == 'n' && !this.willCollide('n')){
+      $(`#square_${this.x}_${this.y}`).removeClass(`bullet`);
+      this.y++;
+      this.facing = 'n';
+    }
+    if (direction == 'e' && !this.willCollide('e')){
+      $(`#square_${this.x}_${this.y}`).removeClass(`bullet`);
+      this.x++;
+      this.facing = 'e';
+    }
+    if (direction == 's' && !this.willCollide('s')){
+      $(`#square_${this.x}_${this.y}`).removeClass(`bullet`);
+      this.y--;
+      this.facing = 's';
+    }
+    if (direction == 'w' && !this.willCollide('w')){
+      $(`#square_${this.x}_${this.y}`).removeClass(`bullet`);
+      this.x--;
+      this.facing = 'w';
     }
   }
 }
@@ -191,8 +244,14 @@ create_key_events();
 
 const do_tick_loop = () => {
   movetick = !movetick;
+  do_bullet_movement();
   do_player_movement();
   update_board();
+}
+const do_bullet_movement = () => {
+  for (i = 0;i<bullets.length;i++){
+    bullets[i].move(bullets[i].facing);
+  }
 }
 let tick_loop = setInterval(do_tick_loop,40);
 const update_board = () => {
@@ -202,4 +261,6 @@ const update_board = () => {
   console.log('tick');
   $(`#square_${player1.x}_${player1.y}`).addClass("player1");
   $(`#square_${player2.x}_${player2.y}`).addClass("player2");
+  $(`#info_player1`).html(`player1: ${player1.score}`);
+  $(`#info_player2`).html(`player2: ${player2.score}`);
 }
