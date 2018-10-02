@@ -8,6 +8,7 @@
   display: inline-block;
 }
 .scoreboard{
+  margin: auto;
   display: inline-block;
 }
 #gameboard {
@@ -24,4 +25,10 @@
 }
 .wall{
   background-color: brown;
+}
+#levelselect{
+  align-content: justify;
+}
+button {
+  margin: 25px;
 }
