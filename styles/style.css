@@ -13,8 +13,8 @@
 #gameboard {
   display: inline-block;
 }
-.gridsquare .bullet {
-  background-color: silver;
+.bullet {
+  background-color: yellow;
 }
 .player1{
   background-color: blue;

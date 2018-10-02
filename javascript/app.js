@@ -1,5 +1,7 @@
+let movetick = true;
 let keys_down = {};
 let bullets = [];
+let bullets_fired = 0;
 let player1;
 let player2;
 const create_board = () => {
@@ -18,7 +20,7 @@ const create_board = () => {
     $(`#square_39_${i}`).addClass("wall");
   }
 }
-class player {
+class Player {
   constructor (x,y,facing,number){
     this.x = x;
     this.y = y;
@@ -84,10 +86,65 @@ class player {
       this.facing = 'w';
     }
   }
+  fire(){
+    let bullet = new Bullet(this.x,this.y,this.facing);
+    if (this.facing == 'n'){
+      bullet.y++;
+    }else if (this.facing == 'e'){
+      bullet.x++;
+    }else if (this.facing == 's'){
+      bullet.y--;
+    }else if (this.facing == 'w'){
+      bullet.x--;
+    }
+    bullets.push(bullet);
+  }
+}
+class Bullet {
+  constructor (x,y,facing){
+    this.x = x;
+    this.y = y;
+    this.facing = facing;
+  }
+  willCollide(direction){
+    if (direction == 'n'){
+      console.log('looking north');
+      if ($(`#square_${this.x}_${this.y+1}`).hasClass('player1')
+      ||$(`#square_${this.x}_${this.y+1}`).hasClass('player2')
+      ||$(`#square_${this.x}_${this.y+1}`).hasClass('bullet')
+      ||$(`#square_${this.x}_${this.y+1}`).hasClass('wall')){
+        return true;
+      }
+    }else if (direction == 'e'){
+      if ($(`#square_${this.x+1}_${this.y}`).hasClass('player1')
+      ||$(`#square_${this.x+1}_${this.y}`).hasClass('player2')
+      ||$(`#square_${this.x+1}_${this.y}`).hasClass('bullet')
+      ||$(`#square_${this.x+1}_${this.y}`).hasClass('wall')){
+      return true;
+    }
+    }else if (direction == 'w'){
+      if ($(`#square_${this.x-1}_${this.y}`).hasClass('player1')
+      ||$(`#square_${this.x-1}_${this.y}`).hasClass('player2')
+      ||$(`#square_${this.x-1}_${this.y}`).hasClass('bullet')
+      ||$(`#square_${this.x-1}_${this.y}`).hasClass('wall')){
+      return true;
+    }
+    }else if (direction == 's'){
+      if ($(`#square_${this.x}_${this.y-1}`).hasClass('player1')
+      ||$(`#square_${this.x}_${this.y-1}`).hasClass('player2')
+      ||$(`#square_${this.x}_${this.y-1}`).hasClass('bullet')
+      ||$(`#square_${this.x}_${this.y-1}`).hasClass('wall')){
+      return true;
+    }
+    }else {
+      console.log('unobstructed')
+      return false;
+    }
+  }
 }
 const create_players = () => {
-  player1 = new player (10,10,'n',1);
-  player2 = new player (20,20,'n',2);
+  player1 = new Player (10,10,'n',1);
+  player2 = new Player (20,20,'n',2);
 }
 const create_key_events = () => {
 
@@ -102,22 +159,28 @@ const create_key_events = () => {
   })
 }
 const do_player_movement = () => {
-  if (keys_down[38]){
-    player1.move('n');
-  }if (keys_down[40]){
-    player1.move('s');
-  }if (keys_down[37]){
-    player1.move('w');
-  }if (keys_down[39]){
-    player1.move('e');
-  }if (keys_down[87]){
-    player2.move('n');
-  }if (keys_down[83]){
-    player2.move('s');
-  }if (keys_down[65]){
-    player2.move('w');
-  }if (keys_down[68]){
-    player2.move('e');
+  if (movetick == true){
+    if (keys_down[38]){
+      player1.move('n');
+    }if (keys_down[40]){
+      player1.move('s');
+    }if (keys_down[37]){
+      player1.move('w');
+    }if (keys_down[39]){
+      player1.move('e');
+    }if (keys_down[87]){
+      player2.move('n');
+    }if (keys_down[83]){
+      player2.move('s');
+    }if (keys_down[65]){
+      player2.move('w');
+    }if (keys_down[68]){
+      player2.move('e');
+    }if (keys_down[13]){
+      player1.fire(player1.facing);
+    }if (keys_down[32]){
+      player2.fire(player2.facing);
+    }
   }
 }
 
@@ -127,15 +190,14 @@ create_players();
 create_key_events();
 
 const do_tick_loop = () => {
+  movetick = !movetick;
   do_player_movement();
   update_board();
 }
 let tick_loop = setInterval(do_tick_loop,40);
 const update_board = () => {
   for (i = 0;i<bullets.length;i++){
-    let x = bullets[i].x
-    let y = bullets[i].y
-    $(`square_${x}_${y}`).addClass("bullet");
+    $(`#square_${bullets[i].x}_${bullets[i].y}`).addClass("bullet");
   }
   console.log('tick');
   $(`#square_${player1.x}_${player1.y}`).addClass("player1");
