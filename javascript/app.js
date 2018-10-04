@@ -4,6 +4,7 @@ let bullets = [];
 let bullets_fired = 0;
 let player1;
 let player2;
+let bomb_timer = 0;
 const create_board = () => {
   for(i=0;i<40;i++){
     $('#gameboard').append(`<div class="board_column" id="column${i}"></div>`);
@@ -96,6 +97,21 @@ class Player {
       bullet.x--;
     }
     bullets.push(bullet);
+  }
+  lay_bomb(){
+    $(`#square_${this.x}_${this.y}`).addClass('bomb');
+    $(`#square_${this.x+1}_${this.y}`).addClass('bomb');
+    $(`#square_${this.x-1}_${this.y}`).addClass('bomb');
+    $(`#square_${this.x+1}_${this.y+1}`).addClass('bomb');
+    $(`#square_${this.x}_${this.y+1}`).addClass('bomb');
+    $(`#square_${this.x-1}_${this.y+1}`).addClass('bomb');
+    $(`#square_${this.x+1}_${this.y-1}`).addClass('bomb');
+    $(`#square_${this.x}_${this.y-1}`).addClass('bomb');
+    $(`#square_${this.x-1}_${this.y-1}`).addClass('bomb');
+    bomb_timer = 60;
+  }
+  lay_wall(){
+    $(`#square_${this.x}_${this.y}`).addClass('wall');
   }
 }
 class Bullet {
@@ -232,10 +248,31 @@ const do_player_movement = () => {
       player1.fire(player1.facing);
     }if (keys_down[32]){
       player2.fire(player2.facing);
+    }if (keys_down[220]){
+      player1.lay_bomb();
+    }if (keys_down[81]){
+      player2.lay_bomb();
+    }if (keys_down[69]){
+      player2.lay_wall();
+    }if (keys_down[221]){
+      player1.lay_wall();
     }
   }
 }
 const do_tick_loop = () => {
+  if(bomb_timer > 0){
+    bomb_timer--;
+  }else{
+    if($(`#square_${player1.x}_${player1.y}`).hasClass('bomb')){
+      player2.score += 10;
+    }if($(`#square_${player2.x}_${player2.y}`).hasClass('bomb')){
+      player1.score += 10;
+    }
+    $('.bomb').addClass('explosion');
+    $('.bomb').removeClass('bomb wall');
+    setTimeout(() => {$(`.explosion`).addClass('smoke');$('.explosion').removeClass('explosion');},500);
+    setTimeout(()=>{$('.smoke').removeClass('smoke')},7000);
+  }
   movetick = !movetick;
   do_bullet_movement();
   do_player_movement();
@@ -304,6 +341,15 @@ const board_1 = () => {
 }
 const board_2 = () => {
   clear_board();
+  player2.x++;
+  for(i=0;i<40;i++){
+    $(`#square_${i}_${i+1}`).addClass('wall');
+    $(`#square_${40-i}_${i}`).addClass('wall');
+  }
+  $('#square_20_20').removeClass('wall');
+  $('#square_19_20').removeClass('wall');
+  $('#square_20_21').removeClass('wall');
+  $('#square_19_21').removeClass('wall');
 }
 const board_3 = () => {
   clear_board();

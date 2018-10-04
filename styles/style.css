@@ -1,18 +1,28 @@
+body{
+  text-align: center;
+}
 .gridsquare {
   background-color: tan;
   height: 16px;
   width: 16px;
-
 }
+.bomb{
+    background-color: black;
+  }
 .board_column{
   display: inline-block;
 }
 .scoreboard{
+  padding: 0px 70px;
   margin: auto;
   display: inline-block;
 }
 #gameboard {
   display: inline-block;
+  text-align: center;
+}
+.wall{
+  background-color: brown;
 }
 .bullet {
   background-color: yellow;
@@ -23,12 +33,16 @@
 .player2{
   background-color: red;
 }
-.wall{
-  background-color: brown;
-}
 #levelselect{
-  align-content: justify;
+  width: 100%;
+  text-align: center;
 }
 button {
   margin: 25px;
+}
+.explosion{
+  background-color: orange;
+}
+.smoke{
+  background-color: grey;
 }
