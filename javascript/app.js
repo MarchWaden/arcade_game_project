@@ -108,7 +108,9 @@ class Player {
     $(`#square_${this.x+1}_${this.y-1}`).addClass('bomb');
     $(`#square_${this.x}_${this.y-1}`).addClass('bomb');
     $(`#square_${this.x-1}_${this.y-1}`).addClass('bomb');
-    bomb_timer = 60;
+    if(bomb_timer == 0){
+      bomb_timer = 60;
+    }
   }
   lay_wall(){
     $(`#square_${this.x}_${this.y}`).addClass('wall');
